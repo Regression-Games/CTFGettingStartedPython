@@ -20,8 +20,6 @@ deaths = 0
 
 def configure_bot(bot):
 
-  logging.info('configure_bot called for player bot')
-
   bot.setDebug(False)
   bot.allowParkour(True)
   bot.allowDigWhilePathing(False)
