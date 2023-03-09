@@ -45,7 +45,8 @@ def configure_bot(bot: RGBot):
   # When a player types "start" in the chat, the bot will begin
   # looking for and approaching the flag
   @On(bot, 'chat')
-  def bot_on_chat(this, username, message):
+  def bot_on_chat(this, username, message, *args):
+    print(args)
     if username != bot.username():
       return
     if message== 'start':

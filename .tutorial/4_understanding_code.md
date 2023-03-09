@@ -2,7 +2,7 @@
 
 _Hint - expand this pane to make reading the code a little easier for long lines of code._
 
-In this guide, we are given a starting algorithm for our bot. Open the [index.js](#index.js)
+In this guide, we are given a starting algorithm for our bot. Open the [start.py](#start.py)
 file, and let's dig into our algorithm!
 
 Before reading the code, let's lay out the overall algorithm. This bot has the following rules:
