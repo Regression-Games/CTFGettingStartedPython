@@ -14,51 +14,59 @@ logging.basicConfig(level=logging.NOTSET)
 # We keep track of deaths to make sure that this bot stops when it dies
 deaths = 0
 
+def configure_bot(bot: RGBot):
+  """
+  This strategy is the simplest example of how to get started 
+  with the rg-bot and rg-ctf-utils packages. The Bot will get 
+  the flag and then run back to base to score.
+  
+  Ways to extend this code:
+  TODO: What happens when a bot is completing an action and 
+        another event happens?
+  TODO: How do we respond to item spawn and drop events?
+  TODO: How do we target and attack enemies?
+  TODO: What different states is my bot in, and how can I organize
+        its behavior based on these states?
+  rg-bot docs: https://github.com/Regression-Games/RegressionBot/blob/main/docs/api.md
+  rg-ctf-utils docs: https://github.com/Regression-Games/rg-ctf-utils
+  """
 
-def configure_bot(bot):
-
-  bot.setDebug(False)
-  bot.allowParkour(True)
+  # Since most blocks can't be broken on Arctic Algorithm Field,
+  # don't allow digging while pathfinding
   bot.allowDigWhilePathing(False)
 
+  # Instantiate our helper utilities and events for Capture the Flag
   rg_ctf_utils = RGCTFUtils(bot)
-  rg_ctf_utils.setDebug(False)
-
-  @On(bot, 'spawn')
-  def bot_on_spawn(this):
-    bot.chat(
-      f"I have arrived... ready to capture some flags and kill some bots at: {bot.vecToString(bot.position())}"
-    )
-
-  # Record deaths by incrementing our counter every time we die
-  @On(bot, 'death')
-  def bot_on_death(this):
-    global deaths
-    deaths = deaths + 1
-    logging.info(f"I have died {deaths} times...")
-
-  @On(bot, 'kicked')
-  def bot_on_kicked(this, reason):
-    bot.chat('I was kicked for a reason: %r', reason)
 
   @On(bot, 'error')
   def bot_on_error(this, error):
     bot.chat('I encountered an error: %r', error)
 
+  # When a player types "start" in the chat, the bot will begin
+  # looking for and approaching the flag
+  @On(bot, 'chat')
+  def bot_on_chat(this, username, message):
+    if username != bot.username():
+      return
+    if message== 'start':
+      rg_ctf_utils.approachFlag()
+
+  # When a player obtains the flag, this event gets called.
+  # In the case where that player is this bot, the bot
+  # navigates back to their scoring location.
   @On(bot, CTFEvent.FLAG_OBTAINED)
   def bot_on_flag_obtained(this, collector):
-    # If I was the one to obtain the flag, go and score!
     if collector == bot.username():
       rg_ctf_utils.scoreFlag()
 
+  # If the flag was scored, simply chat a message
   @On(bot, CTFEvent.FLAG_SCORED)
   def bot_on_flag_scored(this, team_name):
-    # After scoring, send a message to chat
     bot.chat(f"Flag scored by ${team_name} team, waiting until it respawns")
 
+  # Once the flag respawns on the map, look for and approach the flag.
   @On(bot, CTFEvent.FLAG_AVAILABLE)
   def bot_on_flag_available(this, flag_position: Vec3):
-    # If flag is available run to get it
     bot.chat(
       f"Flag is available at ${bot.vecToString(flag_position)}, going to get it"
     )

@@ -1,4 +1,8 @@
 echo "
+
+*** PLEASE NOTE - PYTHON SUPPORT IS EXTREMELY EXPERIMENTAL ***
+*** We recommend using our TypeScript or JavaScript templates and guides ***
+
 Thank you for trying out Regression Games!
 
 To get started, please fork this template using the \"Fork Repl\" button.
